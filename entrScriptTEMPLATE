@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+while sleep 0.5;
+do ls -d /PATH/TO/DOWNLOADS | entr sh -c '/PATH/TO/sorter';
+done

@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+clang++ -std=c++23 -Iinclude main.cpp -o sorter

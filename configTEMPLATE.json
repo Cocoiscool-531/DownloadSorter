@@ -1,0 +1,56 @@
+[
+  {
+    "config": [
+      {"Download Directory": "/PATH/TO/DOWNLOADS"},
+      {"Misc Directory": "/PATH/TO/OTHER"}
+    ]
+  },
+  {
+    "sorting": [
+      [
+        "PATH/TO/IMAGES",
+        [
+          "png",  "jpeg", "jpg",  "webp", "bmp",  "gif",  "heic", "tiff",
+          "avif", "svg", "icns"
+        ]
+      ],
+      [
+        "/PATH/TO/DOCUMENTS",
+        [
+          "pdf", "odt", "fodt", "pages", "rtf"
+        ]
+      ],
+      [
+        "/PATH/TO/AUDIO",
+        [
+          "wav", "mp3", "flac", "aiff", "ogg", "aac", "wma", "alac"
+        ]
+      ],
+      [
+        "/PATH/TO/VIDEO",
+        [
+          "mp4",  "webm", "mkv",  "flv",  "gifv", "avi",  "mov",  "qt",
+          "m4p",  "m4v",  "mpg"
+        ]
+      ],
+      [
+        "/PATH/TO/3D/MODELS",
+        [
+          "3mf",   "stl",   "step",  "obj",   "fbx",   "gltf",  "usd",
+          "usdz",  "stp",   "sld",   "blend", "amf",   "iges"
+        ]
+      ],
+      [ "/PATH/TO/GCODE",
+        [
+          "gcode"
+        ]
+      ],
+      [
+        "/PATH/TO/COMPRESSED",
+        [
+          "zip", "rar", "tar", "gz", "dmg"
+        ]
+      ]
+    ]
+  }
+]
