@@ -20,14 +20,6 @@ std::string replaceAll(std::string str, const std::string& from, const std::stri
     }
     return str;
 }
-bool file_exists(const fs::path& p, fs::file_status s = fs::file_status{})
-{
-    std::cout << p;
-    if (fs::status_known(s) ? fs::exists(s) : fs::exists(p))
-      return true; 
-    else
-      return false;
-}
 
 int main(){
   auto start = std::chrono::high_resolution_clock::now();
@@ -104,7 +96,7 @@ int main(){
           destinationDir = otherDir;
         }
       }else{
-        std::cout << "Unidentified file! Path: " << filePath << "\n";
+        logStream << "Unidentified file! Path: " << filePath << "\n";
         continue;
       }
 
