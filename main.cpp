@@ -41,6 +41,7 @@ int main(){
   std::string destinationDir;
   std::string regexExpression;
   std::string jsonExt;
+  std::string fileExt = "";
 
   bool runAgain = true;
   int i = 0;
@@ -50,7 +51,7 @@ int main(){
       sleep(2);
     } 
     runAgain = false;
-       std::string fileExt;
+    fileExt = "";
     fileName = "";
     filePath = "";
     filePathNoExt = "";
@@ -63,18 +64,22 @@ int main(){
       filePath = entry.path().string();
       fileName = filePath.substr(filePath.find_last_of("/") + 1);
       filePathNoExt = filePath.substr(0, filePath.find("."));
-      if(entry.is_directory()){
-        destinationDir = otherDir;
-      }else if(fileName == ".DS_Store"){
+      if(fileName == ".DS_Store"){
         continue;
-      }else if(entry.is_regular_file()){
-        fileExt = filePath.substr(filePath.find_last_of(".") + 1);
-        if(fileExt == "part"){
+      }else{
+        try{
+          fileExt = filePath.substr(filePath.find_last_of(".") + 1);
+        }catch(std::exception const& ex){
+          destinationDir = otherDir;
+          continue;
+        }
+        if(fileExt == "part" || fileExt == "download" || fileExt == "crdownload"){
+          runAgain = true;
           continue;
         }
         bool match = false;
         for(const auto & check : fs::directory_iterator(workingDir)){
-          regexExpression = replaceAll(filePathNoExt, "/", "\\/") + "\\..+\\." + fileExt + "\\.part";
+          regexExpression = replaceAll(filePathNoExt, "/", "\\/") + ".+\\." + fileExt + "\\.part";
           if(std::regex_match(check.path().string(), std::regex(regexExpression))){
             runAgain = true;
             match = true;
@@ -95,11 +100,8 @@ int main(){
         if(destinationDir == ""){
           destinationDir = otherDir;
         }
-      }else{
-        logStream << "Unidentified file! Path: " << filePath << "\n";
-        continue;
       }
-
+      
       logStream << "Move " << filePath << " to " << destinationDir << fileName << "\n";
       fs::rename(filePath, destinationDir + fileName);
       fileExt = "";
