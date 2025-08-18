@@ -33,7 +33,7 @@ int main(){
   json sorting = full[1]["sorting"];
 
   std::string workingDir = config[0]["Download Directory"];
-  std::string otherDir = config[1]["Misc Directory"]
+  std::string otherDir = config[1]["Misc Directory"];
 
   std::string fileName;
   std::string filePath;
@@ -46,7 +46,7 @@ int main(){
   int i = 0;
   while(runAgain){
     i++;
-    if(i > 0){
+    if(i > 1){
       sleep(2);
     } 
     runAgain = false;
