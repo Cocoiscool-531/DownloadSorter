@@ -20,7 +20,12 @@ In the "config" section, two values must be set. The download directory, and the
 It should look like this
 
 ```json
-
+{
+  "config": [
+    {"Download Directory": "/PATH/TO/DOWNLOADS"},
+    {"Misc Directory": "/PATH/TO/OTHER"}
+  ]
+}
 ```
 
 # sorting
@@ -58,3 +63,4 @@ This shouldn't be too hard, clone the repository, install clang if you don't alr
 
 ### Q: How do I fix scripts not having permission to execute?
 ### A: On Mac and Linux, you can run ```chmod +x [file]``` in your terminal to give it execution permissions.
+
