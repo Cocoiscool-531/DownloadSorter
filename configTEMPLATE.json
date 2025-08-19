@@ -10,8 +10,7 @@
       [
         "PATH/TO/IMAGES",
         [
-          "png",  "jpeg", "jpg",  "webp", "bmp",  "gif",  "heic", "tiff",
-          "avif", "svg", "icns"
+          "png",  "jpeg", "jpg",  "webp", "bmp",  "gif",  "heic",           "tiff", "avif", "svg", "icns"
         ]
       ],
       [
