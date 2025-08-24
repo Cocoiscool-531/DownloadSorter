@@ -6,8 +6,18 @@
 #include <filesystem>
 #include <chrono>
 #include <regex>
-#include <unistd.h>
+#include <stdlib.h>
 #include <stdio.h>
+// Win32 checks for 32 OR 64 bit versions of windows
+#ifdef __WIN32
+  #include <windows.h>
+#endif // __WIN32
+#ifdef __APPLE__
+  #include <unistd.h>
+#endif // __APPLE__
+#ifdef __UNIX
+  #include <unistd.h>
+#endif // __UNIX
 
 using json = nlohmann::json;
 namespace fs = std::filesystem;
@@ -22,13 +32,38 @@ std::string replaceAll(std::string str, const std::string& from, const std::stri
 }
 
 int main(){
-  auto start = std::chrono::high_resolution_clock::now();
-  std::ifstream configStream("config.json");
+  char *homeDir;
+  std::string home;
   std::ofstream logStream;
-  logStream.open("console.log", std::ios::app);
+  std::ifstream configStream;
+  // This program is not built to support OS's other than UNIX and Windows
+#ifdef __WIN32
+  homeDir = getenv("USERPROFILE");
+  home = homeDir;
+  logStream.open(home + "\\DownloadSorter\\console.log", std::ios::app);
+  configStream.open(home + "\\DownloadSorter\\config.json");
+#endif // __WIN32
+#ifdef __APPLE__
+  homeDir = getenv("HOME");
+  home = homeDir;
+  logStream.open(home + "/DownloadSorter/console.log", std::ios::app);
+  configStream.open(home + "/DownloadSorter/config.json");
+#endif // __APPLE__
+#ifdef __UNIX
+  homeDir = getenv("HOME");
+  home = homeDir;
+  logStream.open(home + "/DownloadSorter/console.log", std::ios::app);
+  configStream.open(home + "/DownloadSorter/config.json");
+#endif // __UNIX
+  auto start = std::chrono::high_resolution_clock::now();
   logStream << "\n\nStart Execution\n\n";
   // This takes the whole json file and parses it using nlohmann's json library
-  json full = json::parse(configStream);
+  json full = json::parse(
+      /* json input */ configStream, 
+      /* callback */ nullptr,
+      /* allow_exceptions */ true,
+      /* ignore_comments */ true
+      );
   json config = full[0]["config"];
   json sorting = full[1]["sorting"];
 
@@ -48,7 +83,16 @@ int main(){
   while(runAgain){
     i++;
     if(i > 1){
+      // Windows uses "Sleep()", defined in windows.h, UNIX used "sleep()", define in unistd.h
+#ifdef __WIN32
+      Sleep(2);
+#endif // __WIN32
+#ifdef __APPLE__
       sleep(2);
+#endif // __APPLE__
+#ifdef __UNIX
+      sleep(2);
+#endif // __UNIX 
     } 
     runAgain = false;
     fileExt = "";
@@ -64,21 +108,29 @@ int main(){
       filePath = entry.path().string();
       fileName = filePath.substr(filePath.find_last_of("/") + 1);
       filePathNoExt = filePath.substr(0, filePath.find("."));
+      // MacOS stupid thingy that we don't want moving constantly. Google it if you don't know what it is
       if(fileName == ".DS_Store"){
         continue;
       }else{
         try{
+          // Cut down the full file path into the extension only. the "+ 1" makes makes fileExt not include the "."
           fileExt = filePath.substr(filePath.find_last_of(".") + 1);
         }catch(std::exception const& ex){
           destinationDir = otherDir;
           continue;
         }
+        // Check for common downloading file extensions.
+        // .part = firefox | .download = safari | .crdownload = chromium
         if(fileExt == "part" || fileExt == "download" || fileExt == "crdownload"){
           runAgain = true;
           continue;
         }
         bool match = false;
         for(const auto & check : fs::directory_iterator(workingDir)){
+          // We need to replace all instances of "/" with "\\/" so that 
+          // 1: The JSON parser does not interpret the "/" as a keyword and
+          // 2: The C++ String constuctor knows to put a literal "\" instead of a literal "/"
+          // Same goes for the "."s
           regexExpression = replaceAll(filePathNoExt, "/", "\\/") + ".+\\." + fileExt + "\\.part";
           if(std::regex_match(check.path().string(), std::regex(regexExpression))){
             runAgain = true;
