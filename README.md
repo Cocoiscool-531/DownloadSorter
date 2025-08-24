@@ -78,6 +78,9 @@ This shouldn't be too hard, clone the repository, install clang if you don't alr
 
 The clang command used to build was: ```clang++ -std=c++23 -Iinclude main.cpp -o sorter```
 
+By default, the script will rerun the directory scanning and moving portion every 2 seconds if a file is still downloading, that way it will wait until it is done downloading, and then moving it. This can be disabled by adding the "NO_REPEAT" flag while building.
+For example: ```clang++ -std=c++23 -D NO_REPEAT=1 -Iinclude main.cpp -o sorter```
+
 ## Windows Port
 I am currently working on a windows port, please be patient.
 

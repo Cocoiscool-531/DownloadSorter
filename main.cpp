@@ -161,6 +161,9 @@ int main(){
       filePath = "";
       destinationDir = "";
     }
+#ifdef NO_REPEAT
+    runAgain = false;
+#endif
   }
   auto stop = std::chrono::high_resolution_clock::now();
   auto duration = duration_cast<std::chrono::microseconds>(stop - start);
