@@ -1,0 +1,117 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.*"
+
+jobs:
+  prepare:
+    name: Create Draft Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Create draft release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run:
+          cat <<-'EOF' > NOTE.md
+                    ## [Setup Guide](https://github.com/Cocoiscool-531/DownloadSorter/?tab=readme-ov-file#Initial-Setup)
+                    OS|Download|
+                    --|--|
+                    Windows|[sorter-x86_64-windows.zip](https://github.com/Cocoiscool-531/DownloadSorter/releases/download/${{ github.ref_name }}/sorter-x86_64-windows.zip)|
+                    Mac (Arm)|[sorter-aarch64-apple.tar.gz](https://github.com/Cocoiscool-531/DownloadSorter/releases/download/${{ github.ref_name }}/sorter-aarch64-apple.tar.gz)|
+                    Mac (x86)|[sorter-x86_64-apple.tar.gz](https://github.com/Cocoiscool-531/DownloadSorter/releases/download/${{ github.ref_name }}/sorter-x86_64-apple.tar.gz)|
+                    Linux|[sorter-x86_64-unknown-linux-gnu.tar.gz](https://github.com/Cocoiscool-531/DownloadSorter/releases/download/${{ github.ref_name }}/sorter-x86_64-unknown-linux-gnu.tar.gz)
+                    EOF
+
+                    gh release create ${{ github.ref_name }} \
+                    --title "${{ github.ref_name }}" \
+                    --draft  \
+                    --generate-notes \
+                    --notes-file NOTE.md \
+
+  build-windows:
+    needs: prepare
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        target:
+          - x86_64-windows
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup toolchain
+        uses: aminya/setup-cpp@v1
+        with:
+          compiler: llvm
+
+      - name: Build
+        run: |
+          cd ${{ matrix.target }}
+          clang++ -std=c++23 -Iinclude main.cpp -o sorter-${{ matrix.target }}
+
+      - name: Compress
+        run: |
+          cd ./target/${{ matrix.target }}/release/
+          7z a "sorter-${{ matrix.target }}.zip"
+          mv "sorter-${{ matrix.target }}.zip" ${{ github.workspace }}
+
+      - name: Submit build artifact
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       run: >-
+          gh release upload ${{ github.ref_name }} sorter-${{ matrix.target }}.zip
+
+  build-mac:
+    needs: prepare
+    strategy:
+      matrix:
+        target:
+          - x86_64-apple
+          - aarch64-apple
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup toolchain
+        uses: aminya/setup-cpp@v1
+        with:
+          compiler=llvm
+
+      - name: Install Mac SDK
+      run: |
+        curl -L "https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX10.9.sdk.tar.xz" | tar -J -x -C /opt
+        curl -L "https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz" | tar -J -x -C /opt
+        echo "SDKROOT=/opt/MacOSX11.3.sdk" >> $GITHUB_ENV
+
+      - name: Build
+        run: |
+          cd ${{ matrix.target }}
+          clang++ -std=c++23 -Iinclude main.cpp -o sorter-${{ matrix.target }}
+
+      - name: Compress tar.gz
+        run: |
+          cp configTEMPLATE.json ./target/${{ matrix.target }}/release/
+          cp entrScriptTEMPLATE.json ./target/${{ matrix.target }}/release/
+          cd .target/${{ matrix.target }}/release/
+          tar czfv sorter-${{ matrix.target }}.tar.gz sorter-${{ matrix.target }} configTEMPLATE.json entrScriptTEMPLATE.json
+          mv sorter-${{ matrix.target }}.tar.gz ${{ github.workspace }}
+
+      - name: Submit build artifact
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          gh release upload ${{ github.ref_name }} sorter-${{ matrix.target }}.tar.gz
