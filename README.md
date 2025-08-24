@@ -21,6 +21,7 @@ Your file tree should look like this. If you're not using entr, ignore the entrS
 
 The sorter executable expects your config to be HOMEDIR/DownloadSorter/config.json. so make sure it's either there, or you have changed the code to be a full file path, and built that.
 
+
 ## Config
 
 First, rename "configTEMPLATE.json" to "config.json"
