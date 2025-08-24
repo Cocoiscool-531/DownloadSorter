@@ -1,4 +1,3 @@
-
 # Download Sorter
 This is a download sorter written in C++ that sorts all files in a folder into customizable subcatagories based on their file extension. It should support Firefox, Safari, and Chromium browsers, but if it doesn't work with yours, you can submit an issue and I'll get it working as soon as I can.
 Only compatible with mac and linux for now, only tested on an M1 MacBook Air, but should work fine on most unix systems. 
@@ -92,6 +91,3 @@ Im not certain if the file path system works the same on windows, so that will n
 
 ### Q: How do I fix scripts not having permission to execute?
 ### A: On Mac and Linux, you can run ```chmod +x [file]``` in your terminal to give it execution permissions.
-
-
-
