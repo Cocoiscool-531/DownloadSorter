@@ -84,13 +84,10 @@ For example: ```clang++ -std=c++23 -D NO_REPEAT=1 -Iinclude main.cpp -o sorter``
 ## Windows Port
 I am currently working on a windows port, please be patient.
 
-Function Calls:
-getenv("HOME"); (Gets the path of the user's home directory, used to find DownloadSorter in that directory
-sleep(2); (From the unistd.h header, replacement exists in windows.h, as "Sleep(2);" I believe.
-
-Im not certain if the file path system works the same on windows, so that will need testing.
+Im not certain if the file path system works on windows, so that will need testing.
 
 # FAQ
 
 ### Q: How do I fix scripts not having permission to execute?
 ### A: On Mac and Linux, you can run ```chmod +x [file]``` in your terminal to give it execution permissions.
+
